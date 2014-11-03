@@ -4,7 +4,7 @@ Contains tasks for celery.
 from celery import shared_task, group
 from celery.utils.log import get_task_logger
 
-from contracts.crawler import DynamicDataCrawler, StaticDataCrawler
+from contracts.crawler import DynamicDataCrawler, StaticDataCrawler, EntitiesCrawler
 from contracts import models
 from contracts.analysis import analysis_manager
 
@@ -30,6 +30,12 @@ def create_categories_fixture():
 @shared_task(ignore_result=True)
 def create_fixture():
     group([create_static_fixture.s(), create_categories_fixture.s()])()
+
+
+@shared_task(ignore_result=True)
+def retrieve_new_entities():
+    crawler = EntitiesCrawler()
+    crawler.update()
 
 
 @shared_task(ignore_result=True)
