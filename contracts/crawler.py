@@ -436,6 +436,8 @@ class TendersCrawler(DynamicCrawler):
                          'price': data['basePrice'],
                          'contractors': data['contractingEntities']}
 
+        prepared_data['series'] = TenderForm.get_series_from_reference(
+            prepared_data['series'], prepared_data['dre_document'])
         form = TenderForm(prepared_data)
 
         if not form.is_valid():
