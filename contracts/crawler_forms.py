@@ -243,3 +243,15 @@ class TenderForm(Form):
         deadline_date += self.cleaned_data['deadline_date']
 
         return deadline_date
+
+    @staticmethod
+    def get_series_from_reference(series, reference):
+        if series is not None:
+            return series
+        else:
+            # reference is like ...&serie=2&...
+            return re.search(r"&serie=(.*?)&", reference).group(1)
+
+    def clean_dre_series(self):
+        return self.get_series_from_reference(self.cleaned_data['dre_series'],
+                                              self.cleaned_data['reference'])

@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 from contracts.crawler import ContractsStaticDataCrawler
 from contracts.crawler_forms import PriceField, clean_place, TimeDeltaField, CPVSField, \
-    CountryChoiceField, ContractTypeField
+    CountryChoiceField, ContractTypeField, TenderForm
 from contracts import models
 
 
@@ -118,3 +118,22 @@ class ContractTypeFieldTestCase(TestCase):
     def test_others(self):
         self.assertEqual(self.field.clean('Outros Tipos (Concessão de exploração de bens do domínio público)'),
                          models.ContractType.objects.get(name='Outros'))
+
+
+class TenderSeriesTestCase(TestCase):
+
+    def test_none(self):
+        x = TenderForm.get_series_from_reference(None,
+                                                 "http://dre.pt/util/getpdf.asp?"
+                                                 "s=udrcp&serie=2&data=2013-12-04&"
+                                                 "iddr=235&iddip=407441481")
+
+        self.assertEqual(x, "2")
+
+    def test_normal(self):
+        x = TenderForm.get_series_from_reference("2",
+                                                 "http://dre.pt/util/getpdf.asp?"
+                                                 "s=udrcp&serie=1&data=2013-12-04&"
+                                                 "iddr=235&iddip=407441481")
+
+        self.assertEqual(x, "2")
