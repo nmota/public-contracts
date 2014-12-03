@@ -124,6 +124,17 @@ def contracted_lorenz_curve(request):
                'REQUIRE_D3JS': True}
     return render(request, 'contracts/analysis/contracted_lorenz_curve/main.html', context)
 
+def contracts_network(request):
+
+    data = analysis_manager.get_analysis("contracts_macro_statistics")
+    context = {'navigation_tab': 'analysis'}
+
+
+    return render(request,
+                  'contracts/analysis/contracts_network/main.html', context)
+
+
+
 
 AVAILABLE_VIEWS = {
     'municipalities_delta_time': municipalities_delta_time,

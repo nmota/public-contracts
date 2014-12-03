@@ -360,3 +360,26 @@ def get_lorenz_curve():
         integral += entity.cumulative/total_count
 
     return data, 1 - 2*integral  # lorenz curve, gini index
+
+def get_contracts_graph():
+
+    def get manytomany_fields(contract):
+
+        for entity in contract.contractors
+
+    data = []
+    contracts = models.Contract.objects.all()
+
+    for contract in contracts:
+
+        entry = {'from': contract.contractors.,
+                 'to': contract.contracted,
+                 'value': contract.price,
+                 'type': contract.procedure_type,
+                 'date': contract.signing_date,
+                 'description': contract.contract_description,
+                }
+
+        data.append(entry)
+
+    return data
