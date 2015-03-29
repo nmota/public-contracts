@@ -124,17 +124,12 @@ def contracted_lorenz_curve(request):
                'REQUIRE_D3JS': True}
     return render(request, 'contracts/analysis/contracted_lorenz_curve/main.html', context)
 
-def contracts_network(request):
+def contracts_graph(request):
 
-    data = analysis_manager.get_analysis("contracts_macro_statistics")
     context = {'navigation_tab': 'analysis'}
-
 
     return render(request,
                   'contracts/analysis/contracts_network/main.html', context)
-
-
-
 
 AVAILABLE_VIEWS = {
     'municipalities_delta_time': municipalities_delta_time,
@@ -151,6 +146,7 @@ AVAILABLE_VIEWS = {
     'contracts_time_series': contracts_time_series,
     'legislation_application_time_series': legislation_application_time_series,
     'contracted_lorenz_curve': contracted_lorenz_curve,
+    'contracts_graph': contracts_graph,
 }
 
 
@@ -169,6 +165,7 @@ titles = OrderedDict([
         ('ministries_contracts_time_series', _('When do portuguese ministries contract most?')),
 
         ('contracted_lorenz_curve', _('Income Inequality in Public Contracts')),
+        ('contracts_graph', _('Graph of contracts entities relationships')),
 ])
 
 

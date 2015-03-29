@@ -1,15 +1,31 @@
 {% extends "contracts/base.html" %}
 {% load i18n %}
 {% load static %}
-{% block title %}{% trans "Netowrk view of Public Contracts"%}{% endblock %}
-{% block content %}
-    <script src="d3.min.js"></script>
-    <script src="script.js"></script>
-    <link rel="stylesheet" href="style.css" type="text/css">
-    <div class="graph">
-
-    </div>
-    <div class="information">
-
+{% block title %}{% trans "Network view of Public Contracts"%}
+<script src="{% static 'js/jsnetworkx.js' %}" type="text/javascript" ></script>
+<div class="text-element">
+        <h2>{% trans "Public Contracts Network View"%}</h2>
+        <p>
+            {% blocktrans %}
+                Portugal's official database has today contracts, with a total value of €.
+                In this view, we tried to:
+            {% endblocktrans %}
+        </p>
+        <h3>{% trans "What is the distribution of prices of these contracts?" %}</h3>
+        {% include "contracts/analysis/contracts_network/graph.html" %}
+        <p>
+            {% blocktrans %}
+                The graph represents the number of contracts (y-axis) within a price range (x-axis).
+                We point out two characteristics of the distribution:
+            {% endblocktrans %}
+        </p>
+        <ul>
+            <li>
+                {% trans "The maximum is around 5000€-10.000€" %}
+            </li>
+            <li>
+                {% trans "The distribution is broad, with contracts from euros to million of euros." %}
+            </li>
+        </ul>
     </div>
 {% endblock %}

@@ -29,7 +29,8 @@ _allAnalysis = [Analysis('municipalities_delta_time',
                 Analysis('entities_values_distribution',
                          get_entities_value_histogram),
                 Analysis('contracted_lorenz_curve',
-                         get_lorenz_curve)
+                         get_lorenz_curve),
+                Analysis('contracts_graph', get_contracts_graph)
                 ]
 
 ANALYSIS = {'municipalities_delta_time': 1,
@@ -45,7 +46,8 @@ ANALYSIS = {'municipalities_delta_time': 1,
             'ministries_delta_time': 11,
             'legislation_application_time_series': 12,
             'entities_values_distribution': 13,
-            'contracted_lorenz_curve': 14
+            'contracted_lorenz_curve': 14,
+            'contracts_graph':15,
             }
 
 PRIMARY_KEY = dict()

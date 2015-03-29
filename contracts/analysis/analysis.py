@@ -363,23 +363,21 @@ def get_lorenz_curve():
 
 def get_contracts_graph():
 
-    def get manytomany_fields(contract):
-
-        for entity in contract.contractors
-
     data = []
     contracts = models.Contract.objects.all()
 
     for contract in contracts:
+        for contractor in contract.contractors:
+            for contracted in contract.contracted:
 
-        entry = {'from': contract.contractors.,
-                 'to': contract.contracted,
-                 'value': contract.price,
-                 'type': contract.procedure_type,
-                 'date': contract.signing_date,
-                 'description': contract.contract_description,
-                }
+                entry = {'from': contractor,
+                         'to': contracted,
+                         'value': contract.price,
+                         'type': contract.procedure_type,
+                         'date': contract.signing_date,
+                         'description': contract.contract_description,
+                         }
 
-        data.append(entry)
+                data.append(entry)
 
     return data

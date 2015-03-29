@@ -220,6 +220,13 @@ def legislation_application_time_series_json(request):
 
     return HttpResponse(json.dumps([time_series]), content_type="application/json")
 
+def contracts_graph_json(request):
+
+    raw_data = analysis_manager.get_analysis('contracts_graph')
+
+    data = {'values': raw_data, 'key': _('Network of contracts')}
+
+    return HttpResponse(json.dumps([data]), content_type="application/json")
 
 AVAILABLE_VIEWS = {
     'category-ranking-index-json': entities_category_ranking_json,
@@ -243,7 +250,10 @@ AVAILABLE_VIEWS = {
     'entities-values-histogram-json': entities_values_histogram_json,
 
     'contracted-lorenz-curve-json': lorenz_curve,
+    'contracts-graph-json': contracts_graph_json,
 }
+
+
 
 
 def analysis_selector(request, analysis_name):
