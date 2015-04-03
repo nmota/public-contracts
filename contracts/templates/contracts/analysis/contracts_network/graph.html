@@ -1,0 +1,24 @@
+{% load i18n %
+<style>
+    #graph-histogram svg {
+        width: 920px;
+        height: 300px;
+    }
+</style>
+<div id="graph-histogram"></div>
+<style>
+//your style here
+</style>
+<body>
+<h1>Teste</h1>
+<script>
+
+var data;
+
+d3.json("{% url 'contracts_data_selector' 'contracts-price-histogram-json' %}", function(error, json) {
+  if (error) return console.warn(error);
+  data = json;
+});
+
+
+</script>
