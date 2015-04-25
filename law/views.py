@@ -45,6 +45,8 @@ def build_laws_list_context(context, GET):
                                                      type__name__icontains=type_name)
         else:
             context['laws'] = context['laws'].search(GET[key])
+    else:
+        context['laws'].search_mode = False
 
     key = 'range'
     if key in GET and GET[key]:
@@ -98,7 +100,9 @@ def type_view(request, type_id, slug=None):
     type = get_object_or_404(models.Type, id=type_id)
 
     context = {'type': type,
-               'laws': type.document_set.order_by("-date").prefetch_related("type"),
+               'laws': indexes.DocumentIndex.objects.filter(type__id=type_id)
+               .order_by("-date")
+               .prefetch_related("type"),
                'navigation_tab': 'types'}
 
     context = build_laws_list_context(context, request.GET)
