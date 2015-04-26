@@ -15,7 +15,7 @@ def add_months(sourcedate, months):
     month = sourcedate.month - 1 + months
     year = sourcedate.year + month // 12
     month = month % 12 + 1
-    day = min(sourcedate.day, calendar.monthrange(year,month)[1])
+    day = min(sourcedate.day, calendar.monthrange(year, month)[1])
     return datetime.date(year, month, day)
 
 
@@ -28,8 +28,8 @@ def get_price_histogram():
     """
     data = []
     for x in range(7, 40):
-        count = models.Contract.objects.filter(price__gte=2**x, price__lt=2**(x+1)).count()
-        data.append([(2**x)/100., count])  # price in euros
+        count = models.Contract.objects.filter(price__gte=2 ** x, price__lt=2 ** (x + 1)).count()
+        data.append([(2 ** x) / 100., count])  # price in euros
 
     return data
 
@@ -44,11 +44,11 @@ def get_entities_value_histogram():
     data = []
     total_checker = 0
     for x in range(5, 40):
-        expended = models.Entity.objects.filter(data__total_earned__gte=2**x,
-                                                data__total_earned__lt=2**(x+1)).count()
-        earned = models.Entity.objects.filter(data__total_expended__gte=2**x,
-                                              data__total_expended__lt=2**(x+1)).count()
-        data.append([(2**x)/100., earned, expended])  # price in euros
+        expended = models.Entity.objects.filter(data__total_earned__gte=2 ** x,
+                                                data__total_earned__lt=2 ** (x + 1)).count()
+        earned = models.Entity.objects.filter(data__total_expended__gte=2 ** x,
+                                              data__total_expended__lt=2 ** (x + 1)).count()
+        data.append([(2 ** x) / 100., earned, expended])  # price in euros
 
     total = models.Entity.objects.count()
 
@@ -71,7 +71,7 @@ def get_entities_specificity(startswith_string):
     # 4.
     entities = list(entities)
     for entity in entities:
-        entity.avg_depth = entity.sum_depth*1./entity.count
+        entity.avg_depth = entity.sum_depth * 1. / entity.count
 
     # 5.
     entities.sort(key=lambda x: x.avg_depth, reverse=True)
@@ -103,8 +103,8 @@ def get_all_procedure_types_time_series():
     end_date = datetime.date(date.today().year, date.today().month, 1)
 
     # ignore procedure types with less than 100 contracts
-    valid_types = models.ProcedureType.objects\
-        .annotate(count=Count('contract'))\
+    valid_types = models.ProcedureType.objects \
+        .annotate(count=Count('contract')) \
         .exclude(count__lt=100)
     # avoid subqueries (Django related optimization)
     valid_types = list(valid_types)
@@ -114,8 +114,8 @@ def get_all_procedure_types_time_series():
         max_date = add_months(min_date, 1)
 
         # restrict to date bounds
-        counts = models.ProcedureType.objects\
-            .filter(id__in=[p.id for p in valid_types])\
+        counts = models.ProcedureType.objects \
+            .filter(id__in=[p.id for p in valid_types]) \
             .filter(contract__signing_date__gte=min_date,
                     contract__signing_date__lt=max_date)
 
@@ -133,7 +133,7 @@ def get_all_procedure_types_time_series():
 
         for procedure_type in valid_types:
             if procedure_type.id in counts:
-                entry[procedure_type.name] = counts[procedure_type.id]/total
+                entry[procedure_type.name] = counts[procedure_type.id] / total
             else:
                 entry[procedure_type.name] = 0
         data.append(entry)
@@ -159,7 +159,7 @@ def get_entities_delta_time(startswith_string):
             avg += contract['added_date'] - contract['signing_date']
             count += 1
 
-        entity.average_delta_time = avg.days*1./count
+        entity.average_delta_time = avg.days * 1. / count
         entity.contracts_number = count
 
     entities.sort(key=lambda x: x.average_delta_time)
@@ -208,7 +208,6 @@ def get_entities_contracts_time_series(startswith_string):
 
 
 def get_procedure_types_time_series(startswith_string):
-
     min_date = datetime.date(2008, 1, 1)
     end_date = datetime.date(date.today().year, date.today().month, 1)
 
@@ -224,9 +223,9 @@ def get_procedure_types_time_series(startswith_string):
         if count != 0:
             entry = {'from': min_date,
                      'to': max_date,
-                     'direct': contracts.filter(procedure_type_id=2).count()*1./count,
-                     'tender': contracts.filter(procedure_type_id=3).count()*1./count
-            }
+                     'direct': contracts.filter(procedure_type_id=2).count() * 1. / count,
+                     'tender': contracts.filter(procedure_type_id=3).count() * 1. / count
+                     }
             data.append(entry)
 
         min_date = max_date
@@ -268,7 +267,6 @@ def get_excluding_entities_contracts_time_series(startswith_string):
 
 
 def get_contracts_price_time_series():
-
     min_date = datetime.date(2008, 1, 1)
     end_date = datetime.date(date.today().year, date.today().month, 1)
 
@@ -295,7 +293,6 @@ def get_contracts_price_time_series():
 
 
 def get_legislation_application_time_series():
-
     max_days = 10  # Código dos contratos públicos - parte II - Contratação pública - CAPÍTULO XII - Artigo 108.
 
     query = '''SELECT EXTRACT(YEAR FROM contracts_contract.signing_date) as s_year,
@@ -322,7 +319,7 @@ def get_legislation_application_time_series():
 
         entry = {'from': min_date,
                  'to': max_date,
-                 'count': float(ilegal_contracts)/count}
+                 'count': float(ilegal_contracts) / count}
         data.append(entry)
 
     return data
@@ -333,8 +330,8 @@ def get_lorenz_curve():
     NUMBER_OF_POINTS = 500
 
     # all entities with earnings above 1 euro, sorted by earnings.
-    entities = models.Entity.objects\
-        .filter(data__total_earned__gt=F('data__total_expended'))\
+    entities = models.Entity.objects \
+        .filter(data__total_earned__gt=F('data__total_expended')) \
         .order_by('data__total_earned')
 
     entities = entities.select_related('data')  # a Django-related optimization
@@ -349,30 +346,30 @@ def get_lorenz_curve():
     cumulative = 0
     integral = 0
     for rank, entity in enumerate(entities):
-        cumulative += entity.data.total_earned/total_earned
-        entity.rank = rank/(total_count - 1)
+        cumulative += entity.data.total_earned / total_earned
+        entity.rank = rank / (total_count - 1)
         entity.cumulative = cumulative
 
         # down-sample (but always store last point)
-        if rank % (total_count//NUMBER_OF_POINTS) == 0 or rank == total_count - 1:
+        if rank % (total_count // NUMBER_OF_POINTS) == 0 or rank == total_count - 1:
             data.append(entity)
 
-        integral += entity.cumulative/total_count
+        integral += entity.cumulative / total_count
 
-    return data, 1 - 2*integral  # lorenz curve, gini index
+    return data, 1 - 2 * integral  # lorenz curve, gini index
+
 
 def get_contracts_graph():
-
     data = []
     contracts = models.Contract.objects.all()
 
     for contract in contracts:
         for contractor in contract.contractors:
+            divisor = len(contract.contracted)
             for contracted in contract.contracted:
-
                 entry = {'from': contractor,
                          'to': contracted,
-                         'value': contract.price,
+                         'value': float(contract.price) / divisor,
                          'type': contract.procedure_type,
                          'date': contract.signing_date,
                          'description': contract.contract_description,

@@ -47,7 +47,7 @@ ANALYSIS = {'municipalities_delta_time': 1,
             'legislation_application_time_series': 12,
             'entities_values_distribution': 13,
             'contracted_lorenz_curve': 14,
-            'contracts_graph':15,
+            'contracts_graph': 15,
             }
 
 PRIMARY_KEY = dict()
