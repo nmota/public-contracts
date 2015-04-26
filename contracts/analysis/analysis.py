@@ -364,11 +364,12 @@ def get_contracts_graph():
     contracts = models.Contract.objects.all()
 
     for contract in contracts:
-        for contractor in contract.contractors:
-            divisor = len(contract.contracted)
-            for contracted in contract.contracted:
+        for contractor in contract.contractors.all():
+            contracted = contract.contracted.all()
+            divisor = len(contracted)
+            for entity in contracted:
                 entry = {'from': contractor,
-                         'to': contracted,
+                         'to': entity,
                          'value': float(contract.price) / divisor,
                          'type': contract.procedure_type,
                          'date': contract.signing_date,
