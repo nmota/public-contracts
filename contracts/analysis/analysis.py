@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from datetime import date, timedelta
 import datetime
 import calendar
-
+import networkx as nx
 from django.db.models import Sum, Count, F
 from django.db import connection
 
@@ -359,23 +359,52 @@ def get_lorenz_curve():
     return data, 1 - 2 * integral  # lorenz curve, gini index
 
 
-def get_contracts_graph():
-    data = []
-    contracts = models.Contract.objects.all()
+def get_contracts_graph(number):
+    errors = []
+    graph = nx.DiGraph()
+
+    if number > 0:
+        contracts = models.Contract.objects.all()[:number]
+        entities = models.Entity.objects.all()[:number]
+    else:
+        contracts = models.Contract.objects.all()
+        entities = models.Entity.objects.all()
+
+    for entity in entities:
+        graph.add_node(entity.nif,
+                       name=entity.name,
+                       base_id=entity.base_id,
+                       earned=0,
+                       expended=0,
+                       value=0)
 
     for contract in contracts:
         for contractor in contract.contractors.all():
             contracted = contract.contracted.all()
             divisor = len(contracted)
-            for entity in contracted:
-                entry = {'from': contractor,
-                         'to': entity,
-                         'value': float(contract.price) / divisor,
-                         'type': contract.procedure_type,
-                         'date': contract.signing_date,
-                         'description': contract.contract_description,
-                         }
+            for entit in contracted:
 
-                data.append(entry)
+                price = float(contract.price)/divisor
 
-    return data
+                try:
+                    graph.add_edge(contractor.nif,
+                                   entit.nif,
+                                   de=contractor.name,
+                                   para=entit.name,
+                                   weight=price,
+                                   tipo=contract.procedure_type.name,
+                                   date=contract.signing_date.isoformat(),
+                                   base_id=contract.base_id)
+                except:
+                    errors.append(contract.base_id)
+
+                try:
+                    graph.node[contractor.nif]['expended'] = graph.node[contractor.nif]['expended'] + price
+                    graph.node[contractor.nif]['value'] = graph.node[contractor.nif]['value'] - price
+                    graph.node[entit.nif]['earned'] = graph.node[entit.nif]['earned'] + price
+                    graph.node[entit.nif]['value'] = graph.node[entit.nif]['value'] + price
+
+                except:
+                    continue
+
+    return graph, errors
