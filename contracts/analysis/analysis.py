@@ -371,12 +371,13 @@ def get_contracts_graph(number):
         entities = models.Entity.objects.all()
 
     for entity in entities:
-        graph.add_node(entity.nif,
+        graph.add_node(entity.base_id,
+                       nif=entity.nif,
                        name=entity.name,
                        base_id=entity.base_id,
-                       earned=0,
-                       expended=0,
-                       value=0)
+                       earned=0.0,
+                       expended=0.0,
+                       value=0.0)
 
     for contract in contracts:
         for contractor in contract.contractors.all():
@@ -384,27 +385,52 @@ def get_contracts_graph(number):
             divisor = len(contracted)
             for entit in contracted:
 
-                price = float(contract.price)/divisor
+                if contract.price == 0:
+                    price = float(contract.price)/divisor
+
+                else:
+                    price = 0.0
 
                 try:
-                    graph.add_edge(contractor.nif,
-                                   entit.nif,
-                                   de=contractor.name,
-                                   para=entit.name,
+                    de = contractor.name
+                except:
+                    errors.append(contract.base_id)
+                    de = "None"
+                try:
+                    para = entit.name
+                except:
+                    errors.append(contract.base_id)
+                    para = "None"
+                try:
+                    tipo = contract.procedure_type.name
+                except:
+                    errors.append(contract.base_id)
+                    tipo = "None"
+                try:
+                    data = contract.signing_date.isoformat()
+                except:
+                    errors.append(contract.base_id)
+                    data = "None"
+                try:
+                    graph.add_edge(contractor.base_id,
+                                   entit.base_id,
+                                   de=de,
+                                   para=para,
                                    weight=price,
-                                   tipo=contract.procedure_type.name,
-                                   date=contract.signing_date.isoformat(),
+                                   tipo=tipo,
+                                   date=data,
                                    base_id=contract.base_id)
                 except:
                     errors.append(contract.base_id)
 
                 try:
-                    graph.node[contractor.nif]['expended'] = graph.node[contractor.nif]['expended'] + price
-                    graph.node[contractor.nif]['value'] = graph.node[contractor.nif]['value'] - price
-                    graph.node[entit.nif]['earned'] = graph.node[entit.nif]['earned'] + price
-                    graph.node[entit.nif]['value'] = graph.node[entit.nif]['value'] + price
+                    graph.node[contractor.base_id]["expended"] += price
+                    graph.node[contractor.base_id]['value'] -= price
+                    graph.node[entit.base_id]['earned'] += price
+                    graph.node[entit.base_id]['value'] += price
 
                 except:
+                    errors.append(contract.base_id)
                     continue
 
     return graph, errors
